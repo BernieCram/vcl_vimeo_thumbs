@@ -1,0 +1,4 @@
+name = VCL Vimeo Thumbs
+description = adds the vimeo thumbnail url to another text field in the conference presentations node
+package = custom
+core = 7.x

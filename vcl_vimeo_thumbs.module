@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * Implements hook_node_update().
+ */      
+function vcl_vimeo_thumbs_node_update($node) {
+  if($node->type == 'conference_presentation') {
+    $loaded_node = node_load($node->nid, NULL, TRUE);
+      if (empty($node->field_vimeo_url[LANGUAGE_NONE][0]['value'])){
+        return;
+        }
+      else {
+        $video_url = $loaded_node->field_vimeo_url['und'][0]['value'];
+		$new_value = vcl_vimeo_thumbs_get_vid($video_url)->thumbnail_url;
+		$node->field_vimeo_thumb_url[LANGUAGE_NONE][0]['value'] = $new_value;
+  	    field_attach_update('node', $node);
+	    }
+	  }
+    }
+
+
+/**
+ * gets xml data from the vimeo oembed api.
+ */
+function vcl_vimeo_thumbs_get_vid($video_url) {
+  $url = "http://vimeo.com/api/oembed.xml?url=$video_url"; 
+  $result = drupal_http_request($url);
+    if (empty($result->error)) {
+      return simplexml_load_string($result->data);
+      } 
+    else {
+      throw new Exception("Fetching video failed: [$result->code] $result->error");
+      } 
+    } 
+
